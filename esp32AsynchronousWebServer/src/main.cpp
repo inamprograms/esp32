@@ -5,9 +5,9 @@
     const char *ssid = "ESP32";
     const char *password = "12345678";
 
-    IPAddress local_ip(192,168,1,1);
-    IPAddress gateway(192,168,1,1);
-    IPAddress subnet(255,255,255,0);
+    // IPAddress local_ip(192,168,1,1);
+    // IPAddress gateway(192,168,1,1);
+    // IPAddress subnet(255,255,255,0);
 
     AsyncWebServer server(80);
 void setup()
@@ -15,9 +15,14 @@ void setup()
 
     Serial.begin(9600);
     WiFi.softAP(ssid,password);
-    WiFi.softAPConfig(local_ip,gateway,subnet);
-    Serial.print("Local IP : ");
-    // Serial.println(WiFi.localIP());
+    // WiFi.softAPConfig(local_ip,gateway,subnet);
+
+    // Serial.print("Local IP : ");
+    // Serial.println(WiFi.localIP());  // not working
+
+    IPAddress IP = WiFi.softAPIP();
+    Serial.print("AP IP address: ");
+    Serial.println(IP);
 
     pinMode(2,OUTPUT);
     digitalWrite(2,LOW);
