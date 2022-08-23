@@ -1,3 +1,4 @@
+#include<Arduino.h>
 #include<WiFi.h>
 #include <ESPAsyncWebServer.h>
 
@@ -18,6 +19,11 @@ void setup()
     Serial.print("Local IP : ");
     // Serial.println(WiFi.localIP());
 
+    pinMode(2,OUTPUT);
+    digitalWrite(2,LOW);
+    pinMode(4,OUTPUT);
+    digitalWrite(4,HIGH);
+
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
         {
             char buffer[500];
@@ -36,6 +42,25 @@ void setup()
                 request->send(200, "application/json", buffer);
             }
         });
+
+    server.on("/switch" , HTTP_GET, [](AsyncWebServerRequest *request)
+        {
+            String led , state;
+            char buffer[500];
+            if(request->hasParam("led")&&request->hasParam("state"))
+            {
+                led = request->getParam("led")->value();
+                state = request->getParam("state")->value();
+                digitalWrite(led.toInt(),state.toInt());
+                sprintf(buffer, "Updated state of led %s to %s", led,state);
+                request->send(200,"text", buffer);
+            }
+            else
+            {
+                request->send(200, "text" , "Enter valid params..");
+            }
+        }
+    );
 
         server.begin();
 
