@@ -1,4 +1,4 @@
-// #include <Arduino.h>
+#include <Arduino.h>
 #include<ESPAsyncWebServer.h>
 #include<WiFi.h>
 
@@ -10,6 +10,9 @@ const char *soft_ap_ssid = "ESP32 Soft AP";
 const char *soft_ap_password = "";
 
 AsyncWebServer server(80);
+
+String json_packet;
+int numberOfNetworks;
 
 void setup() {
 
@@ -40,14 +43,50 @@ void setup() {
   server.begin();
 
 
-  server.on("/", HTTP_GET , [](AsyncWebServerRequest *request){
+  server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
 
       request->send(200, "text", "Hello i am working");
 
+  });
+
+  server.on("/" , HTTP_GET, [](AsyncWebServerRequest *request){
+
+
+
+    json_packet += '{';
+    json_packet += '\n';
+    Serial.println("Scanning networks...");
+    numberOfNetworks = WiFi.scanNetworks();
+    Serial.println("Scan done");
+
+    if(numberOfNetworks == 0)
+    {
+      Serial.println("No Networks Found");
+    }
+    else
+    {
+      Serial.print(numberOfNetworks);
+      Serial.println(" networks found");
+      for (int i = 0; i < numberOfNetworks; ++i)
+      {
+        json_packet += '"';
+        json_packet += WiFi.SSID(i);
+        json_packet += '"';
+        json_packet += ':';
+        json_packet += WiFi.RSSI(i);
+        json_packet += ',';
+        json_packet += '\n';
+      }
+    }
+    json_packet += '}';
+
+    request->send(200,"application/json", json_packet);
   });
   
 }    
 
 void loop() {
+
+
   
 }
