@@ -58,6 +58,7 @@ void setup() {
     Serial.println("Scanning networks...");
     numberOfNetworks = WiFi.scanNetworks();
     Serial.println("Scan done");
+    int rssi[numberOfNetworks];
 
     if(numberOfNetworks == 0)
     {
@@ -74,11 +75,19 @@ void setup() {
         json_packet += '"';
         json_packet += ':';
         json_packet += WiFi.RSSI(i);
+        rssi[i] = WiFi.RSSI(i);
         json_packet += ',';
         json_packet += '\n';
       }
     }
     json_packet += '}';
+
+    for(int j = 1;j < numberOfNetworks; ++j)
+    {
+      if(rssi[0] < rssi[j])
+        rssi[0] = rssi[j];
+    }
+    json_packet+= String(rssi[0]);
 
     request->send(200,"application/json", json_packet);
   });
