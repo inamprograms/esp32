@@ -3,7 +3,7 @@
 #include"database.hpp"
 
 WiFiClient client;
-database::database(/* args */)
+database::database()
 {
     Serial.println("Constructor called");
 }
@@ -93,8 +93,7 @@ void database::connectToWifi()
     }
     Serial.println("Connected to WiFi");
     Serial.print("iP Allowed ");
-    Serial.println(WiFi.localIP());
-    
+    Serial.println(WiFi.localIP());    
 }
 
 void database::connectToDatabase()
@@ -103,11 +102,46 @@ void database::connectToDatabase()
     {
         Serial.println("connection failed");
     }
-    else
-    {
-       Serial.println("Connected with database"); 
-    }
+    Serial.println("Connected with database"); 
+    
     
 
 }
 
+void database::receive_data()
+{
+    int payloadIndex;
+    char payload[500];
+    char packet[1000];
+
+    Serial.println("reading data using http get request");
+    sprintf(packet, "GET %s?cnic=%s HTTP/1.1\r\nHOST:%s\r\n\r\n\r\n",URI,CNIC,HOST);
+    Serial.println(packet);
+
+    client.print(packet);
+    String line;
+    Serial.println("reading data");
+    line = client.readString();
+    Serial.print(line);
+    Serial.println();
+
+    for (int i = 0; i < line.length(); i++)
+    {
+        if(line[i] == '{')
+        {
+            payloadIndex = i;
+            for (int j = payloadIndex; j < line.length(); j++)
+            {
+                payload[j-i]  = line[j];
+                if (line[j] == '}')
+                {
+                    payload[j-i+1] = '\0';
+                    break;
+                } 
+            }
+        }
+    }
+
+    Serial.println("closing connection");
+    Serial.println(payload);  
+}

@@ -19,11 +19,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     if ($result) 
     {
         http_response_code(201);
-        echo ("insert have been sucessfull");
+        echo ("insert have been sucessfull\n");
     } 
     else 
     {
-        echo ("insert have been unsucessfull");
+        echo ("insert have been unsucessfull\n");
     }
 
 }
@@ -42,10 +42,10 @@ else if($_SERVER['REQUEST_METHOD'] == 'PUT')
     $result = mysqli_query($con, "UPDATE room1 SET temperature = $temp , humidity = $hum ,led_status = $ledStatus, btn_status = $btnStatus WHERE user_cnic = $cnic");
     if($result) 
     {
-        echo "Room data Updated";}
+        echo "Room data Updated\n";}
     else 
     { 
-        echo "update unsuccessful";
+        echo "update unsuccessful\n";
     }
 }
 else if($_SERVER['REQUEST_METHOD'] == 'PATCH')
@@ -61,11 +61,11 @@ else if($_SERVER['REQUEST_METHOD'] == 'PATCH')
     $result = mysqli_query($con, "UPDATE room1 SET led_status = $ledStatus WHERE user_cnic = $cnic");
 
     if ($result) {
-        echo "Status updated.";
+        echo "Status updated.\n";
     }
     else
     {
-        echo "Status not updated";
+        echo "Status not updated\n";
     }
 
 }
@@ -103,10 +103,10 @@ else if($_SERVER['REQUEST_METHOD'] == 'DELETE')
     $result = mysqli_query($con, "DELETE FROM room1 WHERE user_cnic = $cnic");
 
     if($result){
-        echo "data deleted successfully";
+        echo "data deleted successfully\n";
     }
     else{
-        echo "data deletion unsuccessful";
+        echo "data deletion unsuccessful\n";
     }
 
 }

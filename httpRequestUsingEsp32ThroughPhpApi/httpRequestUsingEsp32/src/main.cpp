@@ -8,7 +8,11 @@ void setup() {
 
     obj.connectToWifi();
     obj.connectToDatabase();
-    obj.send_data(DELETE_DATA);
+    // obj.send_data(POST_DATA);
+    // obj.send_data(PUT_DATA);
+    // obj.send_data(LED_STATUS_PATCH);
+    // obj.send_data(DELETE_DATA);
+    obj.receive_data();
   
 }
 
