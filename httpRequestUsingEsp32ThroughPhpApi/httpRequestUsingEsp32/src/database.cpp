@@ -13,18 +13,16 @@ database::~database()
     Serial.println("Destructor called");
 }
 
-void database::send_data()
+void database::send_data(uint8_t data)
 {
     char payload[500];
     char packet[1000];
     int contentLength;
 
-        Serial.println("in fun");
-    switch (0)
+   
+    switch (data)
     {
     case POST_DATA:
-        Serial.println("in sw");
-
         contentLength = sprintf(payload, "{\"cnic\" : %s, \"temp\" : %i, \"hum\" : %i, \"ledStatus\" : %i, \"btnStatus\" : %i}",CNIC,500,600,1,1);
         sprintf(packet, "POST %s HTTP/1.1\r\nHOST:%s\r\nContent-type:%s\r\nContent-length:%i\r\n\r\n%s",URI,HOST,CONTENT_TYPE,contentLength,payload);
         Serial.println(packet);
@@ -35,11 +33,48 @@ void database::send_data()
             Serial.print(line);
         }
         Serial.println();
-        Serial.println("closing connection");
-        
+        Serial.println("closing connection"); 
         break;
-
-    
+    case PUT_DATA:
+        contentLength = sprintf(payload, "{\"cnic\" : %s, \"temp\" : %i, \"hum\" : %i, \"ledStatus\" : %i, \"btnStatus\" : %i}",CNIC,100,100,0,0);
+        sprintf(packet, "PUT %s HTTP/1.1\r\nHOST:%s\r\nContent-type:%s\r\nContent-length:%i\r\n\r\n%s",URI,HOST,CONTENT_TYPE,contentLength,payload);
+        Serial.println(packet);
+        client.print(packet);
+        while (client.available())
+        {
+            String line = client.readStringUntil('\r');
+            Serial.print(line);
+        }
+        Serial.println();
+        Serial.println("closing connection");
+        break;
+    case LED_STATUS_PATCH:
+        contentLength = sprintf(payload, "{\"cnic\" : %s, \"ledStatus\" : %i}",CNIC,1);
+        sprintf(packet, "PATCH %s HTTP/1.1\r\nHOST:%s\r\nContent-type:%s\r\nContent-length:%i\r\n\r\n%s",URI,HOST,CONTENT_TYPE,contentLength,payload);
+        Serial.println(packet);
+        client.print(packet);
+        while (client.available())
+        {
+            String line = client.readStringUntil('\r');
+            Serial.print(line);
+        }
+        Serial.println();
+        Serial.println("closing connection");
+        break;
+    case DELETE_DATA:
+        contentLength = sprintf(payload, "{\"cnic\" : %s}",CNIC);
+        sprintf(packet, "DELETE %s HTTP/1.1\r\nHOST:%s\r\nContent-type:%s\r\nContent-length:%i\r\n\r\n%s",URI,HOST,CONTENT_TYPE,contentLength,payload);
+        Serial.println(packet);
+        client.print(packet);
+        while (client.available())
+        {
+            String line = client.readStringUntil('\r');
+            Serial.print(line);
+        }
+        Serial.println();
+        Serial.println("closing connection");
+        break;
+   
     default:
         break;
     }
@@ -57,7 +92,7 @@ void database::connectToWifi()
         Serial.println("<connecting>");
     }
     Serial.println("Connected to WiFi");
-    Serial.print("iP Allowed");
+    Serial.print("iP Allowed ");
     Serial.println(WiFi.localIP());
     
 }
@@ -75,3 +110,4 @@ void database::connectToDatabase()
     
 
 }
+

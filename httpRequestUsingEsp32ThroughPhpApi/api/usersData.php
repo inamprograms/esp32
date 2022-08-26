@@ -96,8 +96,8 @@ else if($_SERVER['REQUEST_METHOD'] == 'DELETE')
     $json_data = file_get_contents('php://input');
     $decoded_data = json_decode($json_data);
     
-    $cnic =  $_GET['cnic'];
-    // $cnic = $decoded_data->cnic;
+    // $cnic =  $_GET['cnic'];
+    $cnic = $decoded_data->cnic;
 
     $con =  mysqli_connect("localhost", "root", "" , "esp_data") or die(mysql_error());
     $result = mysqli_query($con, "DELETE FROM room1 WHERE user_cnic = $cnic");

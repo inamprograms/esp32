@@ -30,7 +30,7 @@
 
         void connectToWifi();
         void connectToDatabase();
-        void send_data();
+        void send_data(uint8_t data);
         void receive_data();
     };
 
