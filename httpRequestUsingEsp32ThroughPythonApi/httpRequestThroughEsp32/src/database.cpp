@@ -4,7 +4,7 @@
 #include"database.hpp"
 
 WiFiClient client;
-bool ledStatus;
+static bool ledStatus;
 database::database()
 {
     Serial.println("constructor");

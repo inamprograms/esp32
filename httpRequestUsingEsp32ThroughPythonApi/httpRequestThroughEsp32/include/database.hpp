@@ -32,11 +32,4 @@ public:
     void send_data(uint8_t data);
     void retrieve_data();
 };
-
-
-
-
-
-
-
 #endif
