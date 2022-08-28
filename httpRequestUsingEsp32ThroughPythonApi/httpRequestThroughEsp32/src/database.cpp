@@ -1,8 +1,10 @@
 #include<Arduino.h>
 #include<WiFi.h>
+#include <ArduinoJson.h>
 #include"database.hpp"
 
 WiFiClient client;
+bool ledStatus;
 database::database()
 {
     Serial.println("constructor");
@@ -51,7 +53,7 @@ void database::send_data(uint8_t data)
     {
     case POST_DATA:
         contentLength = sprintf(payload, "{ \"cnic\" : \"%s\", \"temperature\" : \"%i\", \"humidity\" : \"%i\", \"led_status\" : \"%i\", \"btn_status\" : \"%i\"}",CNIC,500,600,1,1);
-        sprintf(packet, "POST %s HTTP/1.1\r\nHOST:%s\r\nContent-type:%s\r\nContent-length:%i\r\n\r\n%s",URI,HOST,CONTENT_TYPE,contentLength,payload);
+        sprintf(packet, "POST %s HTTP/1.1\r\nHOST:%s\r\nContent-type:%s\r\nContent-length:%i\r\n\r\n%s",SEND_DATA_URI,HOST,CONTENT_TYPE,contentLength,payload);
         Serial.println(packet);
         client.print(packet);
         while (client.available())
@@ -65,7 +67,7 @@ void database::send_data(uint8_t data)
 
     case PUT_DATA:
         contentLength = sprintf(payload, "{\"cnic\" : \"%s\", \"temperature\" : \"%i\", \"humidity\" : \"%i\", \"led_status\" : \"%i\", \"btn_status\" : \"%i\"}",CNIC,100,100,0,0);
-        sprintf(packet, "PUT %s HTTP/1.1\r\nHOST:%s\r\nContent-type:%s\r\nContent-length:%i\r\n\r\n%s",URI,HOST,CONTENT_TYPE,contentLength,payload);
+        sprintf(packet, "PUT %s HTTP/1.1\r\nHOST:%s\r\nContent-type:%s\r\nContent-length:%i\r\n\r\n%s",SEND_DATA_URI,HOST,CONTENT_TYPE,contentLength,payload);
         Serial.println(packet);
         client.print(packet);
         while (client.available())
@@ -77,8 +79,8 @@ void database::send_data(uint8_t data)
         Serial.println("closing connection");
         break;
     case LED_STATUS_PATCH:
-        contentLength = sprintf(payload, "{\"cnic\" : \"%s\", \"led_status\" : \"%i\"}",CNIC,1);
-        sprintf(packet, "PATCH %s HTTP/1.1\r\nHOST:%s\r\nContent-type:%s\r\nContent-length:%i\r\n\r\n%s",URI,HOST,CONTENT_TYPE,contentLength,payload);
+        contentLength = sprintf(payload, "{\"cnic\" : \"%s\", \"led_status\" : \"%i\"}",CNIC,ledStatus);
+        sprintf(packet, "PATCH %s HTTP/1.1\r\nHOST:%s\r\nContent-type:%s\r\nContent-length:%i\r\n\r\n%s",SEND_DATA_URI,HOST,CONTENT_TYPE,contentLength,payload);
         Serial.println(packet);
         client.print(packet);
         while (client.available())
@@ -91,7 +93,7 @@ void database::send_data(uint8_t data)
         break;
     case DELETE_DATA:
         contentLength = sprintf(payload, "{\"cnic\" : \"%s\"}",CNIC);
-        sprintf(packet, "DELETE %s HTTP/1.1\r\nHOST:%s\r\nContent-type:%s\r\nContent-length:%i\r\n\r\n%s",URI,HOST,CONTENT_TYPE,contentLength,payload);
+        sprintf(packet, "DELETE %s HTTP/1.1\r\nHOST:%s\r\nContent-type:%s\r\nContent-length:%i\r\n\r\n%s",SEND_DATA_URI,HOST,CONTENT_TYPE,contentLength,payload);
         Serial.println(packet);
         client.print(packet);
         while (client.available())
@@ -115,7 +117,7 @@ void database::retrieve_data()
     char packet[1000];
 
     Serial.println("reading data using http get request");
-    sprintf(packet, "GET %s?cnic=%s HTTP/1.1\r\nHOST:%s\r\n\r\n\r\n",URI,CNIC,HOST);
+    sprintf(packet, "GET %s%s HTTP/1.1\r\nHOST:%s\r\nConnection: keep-alive\r\n\r\n",GET_DATA_URI,CNIC,HOST);
     Serial.println(packet);
 
     client.print(packet);
@@ -143,5 +145,31 @@ void database::retrieve_data()
     }
 
     Serial.println("closing connection");
-    Serial.println(payload);  
+    Serial.println(payload); 
+
+    DynamicJsonDocument document(1024);
+    deserializeJson(document,payload);
+    String button  = document["buttonStatus"];
+    Serial.println(button);
+
+    if (button.toInt() == 1)
+    {
+        digitalWrite(LED_BUILTIN,HIGH);
+        ledStatus = 1;
+        connectToDatabase();
+        send_data(LED_STATUS_PATCH);
+    }
+    else if(button.toInt() == 0)
+    {
+        digitalWrite(LED_BUILTIN,LOW);
+        ledStatus = 0;
+        connectToDatabase();
+        send_data(LED_STATUS_PATCH);
+    }
+    
+
+
+
 }
+
+

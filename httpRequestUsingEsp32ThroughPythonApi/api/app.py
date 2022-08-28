@@ -75,6 +75,19 @@ class send_data(Resource):
         con.commit()
         return{"Led status updated " : api.payload['cnic']}
 
+@api.route('/retrieve_data/<string:cnic>')
+class receive_data(Resource):
+    def get(self,cnic):
+        mysql_query = """ SELECT * FROM room1 WHERE user_cnic = %s """
+        connection = connectWithDb()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute(mysql_query,(cnic,))
+        record = cursor.fetchall()
+        # dict = record[0]
+        # return {'Temperature':dict['temperature'],"humidity":dict['humidity'],"ledStatus":dict['led_status'],"buttonStatus":dict['btn_status']}
+        for row in record:
+           return {'temp coming':row['temperature'],"humidity":row['humidity'],"ledStatus":row['led_status'],"buttonStatus":row['btn_status']}
+    
 if __name__ == '__main__':
     app.run(debug=True, port=5000, host='0.0.0.0')
     
