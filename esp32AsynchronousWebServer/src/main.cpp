@@ -1,7 +1,7 @@
 #include<Arduino.h>
 #include<WiFi.h>
 #include <ESPAsyncWebServer.h>
-
+//TO DO : SWITCH AUTO IN AP AND STATIONARY MODE
     const char *ssid = "ESP32";
     const char *password = "12345678";
 

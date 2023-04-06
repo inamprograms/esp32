@@ -1,7 +1,7 @@
 #ifndef DATABASE_HPP
 #define DATABASE_HPP
 
-#define POST_DATA 0
+#define POST_DATA 0 //magical numbers
 #define PUT_DATA 1
 #define DELETE_DATA 2
 #define LED_STATUS_PATCH 3
@@ -12,8 +12,8 @@
 #define CONTENT_TYPE "application/json"
 
 
-#define WIFI_SSID "Inam ul Rehman"
-#define WIFI_PASSWORD "in123456"
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
 
 #define HTTP_PORT 80
 
