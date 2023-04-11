@@ -1,7 +1,6 @@
 #include<WiFi.h>
-// HI new change  to check
-const char *ssid = "Inam ul Rehman";
-const char *password = "in123456";
+const char *ssid = "";
+const char *password = "";
 
 void setup(){
   Serial.begin(9600);
